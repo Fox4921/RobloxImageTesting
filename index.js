@@ -151,7 +151,7 @@ app.post('/upload', uploadLimiter, upload.single('image'), async (req, res) => {
 
     // convert and save pixel JSON
     const buffer = req.file.buffer;
-    const result = await imageBufferToPixelJSON(buffer);
+    // const result = await imageBufferToPixelJSON(buffer);
 
     // use original filename, sanitized, and prefix with timestamp to avoid collisions
     const originalName = req.file.originalname || 'upload';
@@ -159,13 +159,20 @@ app.post('/upload', uploadLimiter, upload.single('image'), async (req, res) => {
     const fileName = `${Date.now()}_${safeName}.json`;
     const filePath = path.join(STORAGE_DIR, fileName);
 
+    //await fs.writeJson(filePath, {
+    //  filename: fileName,
+    //  original: originalName,
+    //  uploadedAt: new Date().toISOString(),
+    //  width: result.width,
+    //  height: result.height,
+    //  pixels: result.pixels
+    //});
+    const base64Image = buffer.toString('base64');
     await fs.writeJson(filePath, {
-      filename: fileName,
-      original: originalName,
-      uploadedAt: new Date().toISOString(),
-      width: result.width,
-      height: result.height,
-      pixels: result.pixels
+     filename: fileName,
+     original: originalName,
+     uploadedAt: new Date().toISOString(),
+     imageBase64: base64Image
     });
 
     res.send(`<h3>Upload successful!</h3><p>File saved as: <code>${fileName}</code></p>`);
